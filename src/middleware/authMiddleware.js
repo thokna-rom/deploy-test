@@ -1,13 +1,15 @@
 const jwt = require('jsonwebtoken');
 
-function verifyToken (req, res, next) {
+function verifyToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.status(401).json({message: "Unauthentication"});
+    const token = authHeader && authHeader.split(' ')[1]; // Extract the token from the "Bearer" scheme
+    if (!token) return res.status(401).json({ message: "Authentication required" });
 
     jwt.verify(token, process.env.JWT_KEY, (err, user) => {
-        if (err) return res.status(401).json({message: "Unauthentication"});
-        req.user = user.data;
+        if (err) return res.status(401).json({ message: "Invalid or expired token" });
+
+        // Set the user on the request object
+        req.user = user;
         next();
     });
 }

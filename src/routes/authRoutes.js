@@ -19,6 +19,11 @@ const upload = multer({ storage: storage });
 
 router.post("/register", upload.single('image'), authController.register);
 router.post("/login", authController.login);
-router.get("/check-auth",verifyToken,authController.checkAuth);
+router.get('/checkout', verifyToken, (req, res) => {
+  // Now you can access `req.user` in this route
+  const userId = req.user.id; // access the user ID from the token payload
 
+  // Implement your checkout logic here
+  res.status(200).json({ message: "Checkout successful", userId });
+});
 module.exports = router;
