@@ -34,16 +34,17 @@ const authController = {
     login: async (req, res) => {
         try {
             const { email, password } = req.body;
+            console.log("Login request received:", { email }); // Debug log
 
-            // Find the user in a case-insensitive manner
-            const user = await User.findOne({ email: new RegExp(`^${email}$`, 'i') });
-
+            const user = await User.findOne({ email });
             if (!user) {
+                console.log("User not found with email:", email); // Debug log
                 return res.status(401).json({ message: "Authentication failed: User not found" });
             }
 
             const isPasswordCorrect = await bcrypt.compare(password, user.password);
             if (!isPasswordCorrect) {
+                console.log("Incorrect password for user:", email); // Debug log
                 return res.status(401).json({ message: "Password is incorrect" });
             }
 
