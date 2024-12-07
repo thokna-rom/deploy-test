@@ -4,17 +4,15 @@ const jwt = require("jsonwebtoken");
 
 const authController = {
     register: async (req, res) => {
-        const {
-            username,
-            email,
-            password,
-            address,
-            work,
-            profile_picture_path,
-        } = req.body;
-        
+        const { username, email, password, address, work, profile_picture_path } = req.body;
+
         try {
-            const salt = await bcrypt.genSalt();
+            const existingUser = await User.findOne({ email });
+            if (existingUser) {
+                return res.status(409).json({ message: "Email already exists" });
+            }
+
+            const salt = await bcrypt.genSalt(10); // Standard salt rounds
             const hashPassword = await bcrypt.hash(password, salt);
             const newUser = new User({
                 username,
@@ -24,8 +22,9 @@ const authController = {
                 work,
                 profile_picture_path,
             });
+
             await newUser.save();
-            return res.status(201).json(newUser);
+            return res.status(201).json({ message: "User registered successfully", user: newUser });
         } catch (error) {
             console.error("Error in registration:", error);
             return res.status(500).json({ error: "Failed to register user" });
@@ -34,37 +33,44 @@ const authController = {
 
     login: async (req, res) => {
         try {
-            const {email, password} = req.body;
-            const user = await User.findOne({email});
-            if (!user) return res.status(401).json({message: "Unauthentication"});
-            const compare = await bcrypt.compare(password, user.password);
-            if (!compare) return res.status(401).json({message: "Password not Correct!"});
+            const { email, password } = req.body;
+            const user = await User.findOne({ email });
+            if (!user) return res.status(401).json({ message: "Authentication failed: User not found" });
+
+            const isPasswordCorrect = await bcrypt.compare(password, user.password);
+            if (!isPasswordCorrect) return res.status(401).json({ message: "Password is incorrect" });
+
             const token = getToken(user);
             return res.status(200).json({
+                message: "Login successful",
                 user,
                 token,
-                message: 'login successful',
             });
         } catch (error) {
-            return res.status(500).json(error.message);
+            console.error("Error during login:", error);
+            return res.status(500).json({ error: "Internal server error" });
         }
     },
+
     checkAuth: async (req, res) => {
         try {
             const id = req.user._id;
             const user = await User.findById(id);
+            if (!user) return res.status(404).json({ message: "User not found" });
             res.status(200).json(user);
         } catch (error) {
-            res.status(401).json({message: "Authentication"});
+            console.error("Error in authentication check:", error);
+            res.status(401).json({ message: "Authentication failed" });
         }
     }
-
 };
+
 module.exports = authController;
 
 function getToken(user) {
-    return jwt.sign({
-        data: user
-    }, process.env.JWT_KEY , { expiresIn: '5h' })
+    return jwt.sign(
+        { id: user._id }, // Using only essential data
+        process.env.JWT_KEY,
+        { expiresIn: '5h' }
+    );
 }
-
