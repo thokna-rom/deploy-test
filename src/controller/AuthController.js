@@ -61,25 +61,40 @@ const authController = {
     },
 
 
+    // checkAuth: async (req, res) => {
+    //     try {
+    //         const id = req.user._id;
+    //         const user = await User.findById(id);
+    //         if (!user) return res.status(404).json({ message: "User not found" });
+    //         res.status(200).json(user);
+    //     } catch (error) {
+    //         console.error("Error in authentication check:", error);
+    //         res.status(401).json({ message: "Authentication failed" });
+    //     }
+    // }
     checkAuth: async (req, res) => {
         try {
             const id = req.user._id;
             const user = await User.findById(id);
-            if (!user) return res.status(404).json({ message: "User not found" });
             res.status(200).json(user);
         } catch (error) {
-            console.error("Error in authentication check:", error);
-            res.status(401).json({ message: "Authentication failed" });
+            res.status(401).json({message: "Authentication"});
         }
     }
 };
 
 module.exports = authController;
 
+// function getToken(user) {
+//     return jwt.sign(
+//         { id: user._id }, // Using only essential data
+//         process.env.JWT_KEY,
+//         { expiresIn: '5h' }
+//     );
+// }
 function getToken(user) {
-    return jwt.sign(
-        { id: user._id }, // Using only essential data
-        process.env.JWT_KEY,
-        { expiresIn: '5h' }
-    );
+    return jwt.sign({
+        data: user
+    }, process.env.JWT_KEY , { expiresIn: '5h' })
 }
+
