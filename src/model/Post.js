@@ -12,21 +12,23 @@ const PostSchema = new Schema({
         required: true
     },
     like: {
-        type: Array,
+        type: [Schema.Types.ObjectId],
+        ref: 'User', // Optional if you plan to populate user data
         default: []
     },
     user_id: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     username: {
         type: String,
         required: true
     },
-    profile_picture_path: {
+    user_profile_picture_path: {
         type: String,
         required: true
     },
 }, { timestamps: true });
 
-module.exports = mongoose.model('post', PostSchema);
+module.exports = mongoose.model('Post', PostSchema);

@@ -34,11 +34,18 @@ const authController = {
     login: async (req, res) => {
         try {
             const { email, password } = req.body;
-            const user = await User.findOne({ email });
-            if (!user) return res.status(401).json({ message: "Authentication failed: User not found" });
+
+            // Find the user in a case-insensitive manner
+            const user = await User.findOne({ email: new RegExp(`^${email}$`, 'i') });
+
+            if (!user) {
+                return res.status(401).json({ message: "Authentication failed: User not found" });
+            }
 
             const isPasswordCorrect = await bcrypt.compare(password, user.password);
-            if (!isPasswordCorrect) return res.status(401).json({ message: "Password is incorrect" });
+            if (!isPasswordCorrect) {
+                return res.status(401).json({ message: "Password is incorrect" });
+            }
 
             const token = getToken(user);
             return res.status(200).json({
@@ -51,6 +58,7 @@ const authController = {
             return res.status(500).json({ error: "Internal server error" });
         }
     },
+
 
     checkAuth: async (req, res) => {
         try {
