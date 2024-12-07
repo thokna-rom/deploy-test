@@ -19,6 +19,6 @@ const upload = multer({ storage: storage });
 
 router.post("/register", upload.single('image'), authController.register);
 router.post("/login", authController.login);
-router.get("/checkout", authController.checkAuth);
+router.get("/checkout", verifyToken, authController.checkAuth);
 
 module.exports = router;
