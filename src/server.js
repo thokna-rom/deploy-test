@@ -6,7 +6,7 @@ const authRoutes = require("./routes/authRoutes");
 const friendRoutes = require("./routes/friendsRoutes");
 const postRoutes = require("./routes/postRoutes");
 const app = express();
-const uploadDir = path.join(__dirname, "../upload");
+// const uploadDir = path.join(__dirname, "../upload");
 
 // ========
 const imgur = require("imgur");
@@ -35,6 +35,11 @@ app.post('./upload', (req, res,) => {
     if (err) {
       return res.status(500).send(err)
     }
+
+    imgur.uploadFile(uploadPath).then((urlObject) => {
+      fs.unlinkSync(uploadPath)
+      res.send(urlObject)
+    })
   })
 })
 
