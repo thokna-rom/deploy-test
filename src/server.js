@@ -6,7 +6,11 @@ const authRoutes = require("./routes/authRoutes");
 const friendRoutes = require("./routes/friendsRoutes");
 const postRoutes = require("./routes/postRoutes");
 const app = express();
-const uploadDir = path.join(__dirname, "/upload");
+const uploadDir = path.join(__dirname, "../upload");
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
 
 
 require("dotenv").config();
@@ -20,7 +24,7 @@ app.use(express.json());
 
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "../upload")));
+// app.use(express.static(path.join(__dirname, "../upload")));
 app.use("/api/auth", authRoutes);
 app.use("/api/friend", verifyToken,friendRoutes);
 app.use("/api/post", verifyToken,postRoutes);
