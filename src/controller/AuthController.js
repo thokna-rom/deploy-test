@@ -12,7 +12,7 @@ const authController = {
                 return res.status(409).json({ message: "Email already exists" });
             }
 
-            const salt = await bcrypt.genSalt(10); // Standard salt rounds
+            const salt = await bcrypt.genSalt();
             const hashPassword = await bcrypt.hash(password, salt);
             const newUser = new User({
                 username,
@@ -26,7 +26,6 @@ const authController = {
             await newUser.save();
             return res.status(201).json({ message: "User registered successfully", user: newUser });
         } catch (error) {
-            console.error("Error in registration:", error);
             return res.status(500).json({ error: "Failed to register user" });
         }
     },
@@ -34,17 +33,13 @@ const authController = {
     login: async (req, res) => {
         try {
             const { email, password } = req.body;
-            console.log("Login request received:", { email }); // Debug log
-
             const user = await User.findOne({ email });
             if (!user) {
-                console.log("User not found with email:", email); // Debug log
                 return res.status(401).json({ message: "Authentication failed: User not found" });
             }
 
             const isPasswordCorrect = await bcrypt.compare(password, user.password);
             if (!isPasswordCorrect) {
-                console.log("Incorrect password for user:", email); // Debug log
                 return res.status(401).json({ message: "Password is incorrect" });
             }
 
