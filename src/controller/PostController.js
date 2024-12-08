@@ -1,5 +1,5 @@
 const Post = require("../model/Post");
-const imgurResponse = require("../routes/postRoutes")
+
 const postController = {
     addPost: async (req, res) => {
         try {
@@ -10,13 +10,9 @@ const postController = {
                 username,
                 profile_picture_path,
             } = req.body;
-            //add now
-            const imageUrl = imgurResponse.data.data.link;
-
             const newPost = new Post({
                 description,
-                //add now
-                image_path: imageUrl,
+                image_path,
                 user_id,
                 username,
                 profile_picture_path,
