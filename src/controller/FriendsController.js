@@ -32,7 +32,7 @@ const FriendController = {
                         const formated = {
                             _id: friend.id,
                             username: friend.username,
-                            profile_piture_path: friend.profile_picture_path,
+                            profile_picture_path: friend.profile_picture_path,
                         }
                         friends.push(formated);
                     }
@@ -48,7 +48,7 @@ const FriendController = {
                             const formated = {
                                 _id: not_friend.id,
                                 username: not_friend.username,
-                                profile_piture_path: not_friend.profile_picture_path,
+                                profile_picture_path: not_friend.profile_picture_path,
                             }
                             not_friends.push(formated);
                         }

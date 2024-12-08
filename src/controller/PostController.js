@@ -1,6 +1,3 @@
-const bcrypt = require("bcrypt");
-const User = require("../model/User");
-const jwt = require("jsonwebtoken");
 const Post = require("../model/Post");
 
 const postController = {
